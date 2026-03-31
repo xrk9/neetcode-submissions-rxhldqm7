@@ -11,24 +11,28 @@
 
 class Solution {
 public:
+
+    struct compare{
+        bool operator()(ListNode* a, ListNode* b){
+            return a->val > b->val;
+        }
+    };
     ListNode* mergeKLists(vector<ListNode*>& lists) {
-        int n = lists.size();
+        priority_queue<ListNode*, vector<ListNode*>, compare> minHeap;
+        for(ListNode* node:lists){
+            if(node) minHeap.push(node);
+        }
         ListNode* dummy = new ListNode();
         ListNode* curr = dummy;
-        while(true){
-            ListNode* min = nullptr;
-            int indx = -1;
-            for(int i = 0; i<n; i++){
-                ListNode* node = lists[i];
-                if(node && (min == nullptr || node->val < min->val)){
-                    min = node;
-                    indx = i;
-                }
+        while(!minHeap.empty()){
+            ListNode* min = minHeap.top();
+            curr->next = min;
+            minHeap.pop();
+            curr = curr->next;
+            
+            if(min->next){
+                minHeap.push(min->next);
             }
-            if(indx == -1) break;
-            curr->next = lists[indx];
-            curr=curr->next;
-            lists[indx] = lists[indx]->next;
 
         }
         return dummy->next;
